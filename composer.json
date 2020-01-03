@@ -3,7 +3,7 @@
   "description": "整理php开发时常用的助手函数、工具类，便于快速开发",
   "type": "library",
   "license": "mit",
-  "homepage": "https://github.com/luler/helpers.git",
+  "homepage": "https://github.com/luler",
   "authors": [
     {
       "name": "luler",
