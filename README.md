@@ -4,3 +4,4 @@
 - DownloadHelper
 - EncryptHelper
 - MultiProcessHelper
+- CommonHelper
