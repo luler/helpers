@@ -1,0 +1,22 @@
+{
+  "name": "luler/helpers",
+  "description": "整理php开发时常用的助手函数、工具类，便于快速开发",
+  "type": "library",
+  "license": "mit",
+  "authors": [
+    {
+      "name": "luler",
+      "email": "1207032539@qq.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "php": ">=7"
+  },
+  "autoload": {
+    "psr-4": {
+      "LinZhou\\Helpers\\": "src/Helpers"
+    }
+  }
+}
