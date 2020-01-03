@@ -6,7 +6,7 @@
  * Time: 11:00
  */
 
-namespace Helpers;
+namespace Luler\Helpers;
 
 class DownloadHelper
 {
