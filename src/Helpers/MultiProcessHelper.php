@@ -58,6 +58,11 @@ class MultiProcessHelper
         }
     }
 
+    /**
+     * 回收进程
+     * @param int $hang_up
+     * @author LinZhou <1207032539@qq.com>
+     */
     private static function recycleProcess($hang_up = 1)
     {
         if (!empty(self::$childs)) {
