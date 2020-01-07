@@ -63,7 +63,7 @@ class MultiProcessHelper
      * @param int $hang_up
      * @author LinZhou <1207032539@qq.com>
      */
-    private static function recycleProcess($hang_up = 1)
+    public static function recycleProcess($hang_up = 1)
     {
         if (!empty(self::$childs)) {
             $has_stop_childs = [];
