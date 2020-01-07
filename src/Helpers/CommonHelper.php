@@ -94,7 +94,7 @@ class CommonHelper
      */
     public static function convertSize($size)
     {
-        $unit = array('b', 'kb', 'mb', 'gb', 'tb', 'pb');
+        $unit = array('B', 'KB', 'MB', 'GB', 'TB', 'PB');
         return @round($size / pow(1024, ($i = floor(log($size, 1024)))), 2) . $unit[$i];
     }
 
