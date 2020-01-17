@@ -225,5 +225,21 @@ class CommonHelper
         closedir($handle);
     }
 
-
+    /**
+     * 随机生成唯一订单号（基于日期和随机乱序）
+     * @param null $type
+     * @return string
+     * @author LinZhou <1207032539@qq.com>
+     */
+    function generateOrderId($type = 1)
+    {
+        if ($type == 1) {
+            //都是数字，不过存库时要使用varchar类型,唯一性更好
+            $id = date_format(new \DateTime(), 'YmdHisu') . str_pad(mt_rand(), 10, '0', STR_PAD_LEFT);
+        } else {
+            //bigint类型
+            $id = time() . date_format(new \DateTime(), 'u') . mt_rand(100, 999);
+        }
+        return $id;
+    }
 }
