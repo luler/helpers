@@ -231,7 +231,7 @@ class CommonHelper
      * @return string
      * @author LinZhou <1207032539@qq.com>
      */
-    function generateOrderId($type = 1)
+    public static function generateOrderId($type = 1)
     {
         if ($type == 1) {
             //都是数字，不过存库时要使用varchar类型,唯一性更好
