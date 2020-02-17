@@ -242,4 +242,35 @@ class CommonHelper
         }
         return $id;
     }
+
+    /**
+     * 模拟ping ip
+     * @Author: 我只想看看蓝天 <1207032539@qq.com>
+     * @Datetime: 2020/2/11 0011 0:22
+     * @param string $ip
+     * @return bool
+     */
+    function ping(string $ip)
+    {
+        $ip_port = explode(':', $ip);
+        if (filter_var($ip_port[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {        //IPv6
+            $socket = socket_create(AF_INET6, SOCK_STREAM, SOL_TCP);
+        } elseif (filter_var($ip_port[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {    //IPv4
+            $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+        } else {
+            throw new \Exception('请输入合法ip');
+        }
+
+        if (!isset($ip_port[1])) {        //没有写端口则指定为80
+            $ip_port[1] = '80';
+        }
+        try {
+            $ok = socket_connect($socket, $ip_port[0], $ip_port[1]);
+        } catch (\Exception $e) {
+//        $error_msg=socket_strerror(socket_last_error($socket)); //错误信息
+            $ok = false;
+        }
+        socket_close($socket);
+        return $ok;
+    }
 }
