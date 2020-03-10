@@ -244,15 +244,15 @@ class CommonHelper
     }
 
     /**
-     * 模拟ping ip
+     * 模拟telnet检测主机端口是否启用（只建立链接不发送数据）
      * @Author: 我只想看看蓝天 <1207032539@qq.com>
      * @Datetime: 2020/2/11 0011 0:22
-     * @param string $ip
+     * @param string $ip_port //ip加上端口
      * @return bool
      */
-    function ping(string $ip)
+    function ping(string $ip_port)
     {
-        $ip_port = explode(':', $ip);
+        $ip_port = explode(':', $ip_port);
         if (filter_var($ip_port[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {        //IPv6
             $socket = socket_create(AF_INET6, SOCK_STREAM, SOL_TCP);
         } elseif (filter_var($ip_port[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {    //IPv4
