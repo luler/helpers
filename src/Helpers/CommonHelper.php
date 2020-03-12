@@ -273,4 +273,23 @@ class CommonHelper
         socket_close($socket);
         return $ok;
     }
+
+    /**
+     * 设置浏览器缓存
+     * @param int $interval //浏览器缓存的时间，单位：秒
+     */
+    public function browserCacheControl(int $interval)
+    {
+        if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
+            $c_time = strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) + $interval;
+            if ($c_time > time()) {
+                header('HTTP/1.1 304 Not Modified');
+                exit();
+            }
+        }
+
+        header("Last-Modified: " . gmdate('D, d M Y H:i:s') . ' GMT');
+        header("Expires: " . gmdate('D, d M Y H:i:s', time() + $interval) . ' GMT');
+        header("Cache-Control: max-age=$interval");
+    }
 }
