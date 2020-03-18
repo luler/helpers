@@ -250,7 +250,7 @@ class CommonHelper
      * @param string $ip_port //ip加上端口
      * @return bool
      */
-    function ping(string $ip_port)
+    public static function ping(string $ip_port)
     {
         $ip_port = explode(':', $ip_port);
         if (filter_var($ip_port[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {        //IPv6
@@ -278,7 +278,7 @@ class CommonHelper
      * 设置浏览器缓存
      * @param int $interval //浏览器缓存的时间，单位：秒
      */
-    public function browserCacheControl(int $interval)
+    public static function browserCacheControl(int $interval)
     {
         if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
             $c_time = strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) + $interval;
