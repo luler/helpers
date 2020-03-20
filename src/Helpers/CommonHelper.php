@@ -261,6 +261,10 @@ class CommonHelper
             throw new \Exception('请输入合法ip');
         }
 
+        //设置超时，不然，链接不上会阻塞几十秒，这里设置1秒连不上就返回false
+        socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, ["sec" => 1, "usec" => 0]);
+        socket_set_option($socket, SOL_SOCKET, SO_SNDTIMEO, ["sec" => 1, "usec" => 0]);
+
         if (!isset($ip_port[1])) {        //没有写端口则指定为80
             $ip_port[1] = '80';
         }
