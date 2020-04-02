@@ -21,8 +21,7 @@ class DownloadHelper
         $fb = fopen($path, "rb");
         $size = filesize($path);
         $lenth = $size;
-        if (isset($_SERVER['HTTP_RANGE'])) {
-            preg_match("/bytes=([0-9]+)-/i", $_SERVER['HTTP_RANGE'], $match);
+        if (isset($_SERVER['HTTP_RANGE']) && preg_match("/bytes=([0-9]+)-/i", $_SERVER['HTTP_RANGE'], $match)) {
             $start = $match[1];
         } else {
             $start = 0;
@@ -33,7 +32,7 @@ class DownloadHelper
             fseek($fb, $start);
             header("HTTP/1.1 206 Partical Content");
             header("Content-Range:bytes " . $start . "-" . ($size - 1) . "/" . $size);
-            $lenth = $size - $start + 1;
+            $lenth = $size - $start;
         } else {
             header("Content-Range:bytes 0-" . ($size - 1) . "/" . $size);
         }
@@ -53,5 +52,6 @@ class DownloadHelper
         }
         fpassthru($fb);
         fclose($fb);
+        exit();
     }
 }
