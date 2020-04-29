@@ -245,31 +245,20 @@ class CommonHelper
 
     /**
      * 模拟telnet检测主机端口是否启用（只建立链接不发送数据）
-     * @Author: 我只想看看蓝天 <1207032539@qq.com>
-     * @Datetime: 2020/2/11 0011 0:22
-     * @param string $ip_port //ip加上端口
+     * @param string $domain_or_ip //域名或ip
+     * @param int $port //端口
      * @return bool
+     * @author LinZhou <1207032539@qq.com>
      */
-    public static function ping(string $ip_port)
+    public static function pingIpv4(string $domain_or_ip, int $port = 80)
     {
-        $ip_port = explode(':', $ip_port);
-        if (filter_var($ip_port[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV6)) {        //IPv6
-            $socket = socket_create(AF_INET6, SOCK_STREAM, SOL_TCP);
-        } elseif (filter_var($ip_port[0], FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {    //IPv4
-            $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-        } else {
-            throw new \Exception('请输入合法ip');
-        }
-
+        $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
         //设置超时，不然，链接不上会阻塞几十秒，这里设置1秒连不上就返回false
         socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, ["sec" => 1, "usec" => 0]);
         socket_set_option($socket, SOL_SOCKET, SO_SNDTIMEO, ["sec" => 1, "usec" => 0]);
 
-        if (!isset($ip_port[1])) {        //没有写端口则指定为80
-            $ip_port[1] = '80';
-        }
         try {
-            $ok = socket_connect($socket, $ip_port[0], $ip_port[1]);
+            $ok = socket_connect($socket, $domain_or_ip, $port);
         } catch (\Exception $e) {
 //        $error_msg=socket_strerror(socket_last_error($socket)); //错误信息
             $ok = false;
