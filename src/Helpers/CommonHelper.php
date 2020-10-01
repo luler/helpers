@@ -88,13 +88,16 @@ class CommonHelper
 
     /**
      * 字节转为合适的单位
-     * @param $size
+     * @param int $size
      * @return string
-     * @author LinZhou <1207032539@qq.com>
+     * @author 我只想看看蓝天 <1207032539@qq.com>
      */
-    public static function convertSize($size)
+    public static function convertSize(int $size)
     {
         $unit = array('B', 'KB', 'MB', 'GB', 'TB', 'PB');
+        if ($size == 0) {
+            return '0B';
+        }
         return @round($size / pow(1024, ($i = floor(log($size, 1024)))), 2) . $unit[$i];
     }
 
