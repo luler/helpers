@@ -58,32 +58,32 @@ class CommonHelper
     /**
      * 数组转换成树结构
      * @param $arr //数组
-     * @param int $root //跟节点
      * @param string $pk //主键
      * @param string $pid //父节点字段
      * @param string $child //子节点字段
      * @return array
      * @author LinZhou <1207032539@qq.com>
      */
-    public static function arrayToTree($arr, $root = 0, $pk = 'id', $pid = 'pid', $child = 'children')
+    public static function arrayToTree($arr, $pk = 'id', $pid = 'pid', $child = 'children')
     {
-
         $temp = [];
         foreach ($arr as $value) {
-            if ($value[$pid] == $root) {
-                $temp[] = $value;
-            }
+            $temp[$value[$pk]] = $value;
         }
-        if (empty($temp)) {
-            return [];
-        }
+        unset($arr);
+
+        $res = [];
         foreach ($temp as &$value) {
-            $res = self::arrayToTree($arr, $value[$pk], $pk, $pid, $child);
-            if (!empty($res)) {
-                $value[$child] = $res;
+            //存在父元素，则被父元素引用
+            if (isset($temp[$value[$pid]])) {
+                $temp[$value[$pid]][$child][] = &$value;
+                unset($res[$value[$pk]]);
+            } else {
+                $res[$value[$pk]] =& $value;
             }
         }
-        return $temp;
+        $res = array_values($res);
+        return $res;
     }
 
     /**
