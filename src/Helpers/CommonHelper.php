@@ -276,10 +276,12 @@ class CommonHelper
      */
     public static function browserCacheControl(int $interval)
     {
+        //必须先设置头，防止下面304返回的请求覆盖原来的请求头
         header("Last-Modified: " . gmdate('D, d M Y H:i:s') . ' GMT');
         header("Expires: " . gmdate('D, d M Y H:i:s', time() + $interval) . ' GMT');
         header("Cache-Control: max-age=$interval");
-        header("Pragma: public");
+        header("Pragma: public"); //防止session_start会将该值置为no-cache
+        //如果浏览器请求头带这个，判断过期时间，缓存有效则返回304即可
         if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
             $c_time = strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) + $interval;
             if ($c_time > time()) {
