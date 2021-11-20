@@ -276,6 +276,10 @@ class CommonHelper
      */
     public static function browserCacheControl(int $interval)
     {
+        header("Last-Modified: " . gmdate('D, d M Y H:i:s') . ' GMT');
+        header("Expires: " . gmdate('D, d M Y H:i:s', time() + $interval) . ' GMT');
+        header("Cache-Control: max-age=$interval");
+        header("Pragma: public");
         if (isset($_SERVER['HTTP_IF_MODIFIED_SINCE'])) {
             $c_time = strtotime($_SERVER['HTTP_IF_MODIFIED_SINCE']) + $interval;
             if ($c_time > time()) {
@@ -283,9 +287,5 @@ class CommonHelper
                 exit();
             }
         }
-
-        header("Last-Modified: " . gmdate('D, d M Y H:i:s') . ' GMT');
-        header("Expires: " . gmdate('D, d M Y H:i:s', time() + $interval) . ' GMT');
-        header("Cache-Control: max-age=$interval");
     }
 }
