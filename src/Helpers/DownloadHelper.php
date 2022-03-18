@@ -50,7 +50,14 @@ class DownloadHelper
         } else {
             header('Content-Disposition: attachment; filename=' . urlencode($filename));
         }
-        fpassthru($fb);
+        @ob_end_clean(); //清空缓冲区并关闭缓冲区，避免框架本身开启的缓冲区问题，可能框架没开启缓冲区，所以需要防止报错，加@
+        ob_start();
+        while (!feof($fb)) {
+            echo fread($fb, 8192);;
+            ob_flush(); //输出php缓冲区数据
+            flush(); //输出缓冲区到浏览器
+        }
+//        fpassthru($fb);
         fclose($fb);
         exit();
     }
