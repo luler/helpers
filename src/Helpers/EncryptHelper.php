@@ -25,7 +25,7 @@ class EncryptHelper
      * @param string $secret //秘钥
      * @param int $expires //超时时间
      * @return string
-     * @author LinZhou <1207032539@qq.com>
+     * @author 我只想看看蓝天 <1207032539@qq.com>
      */
     public function aesEncrypt($data, string $secret = null, int $expires = 0)
     {
@@ -55,7 +55,7 @@ class EncryptHelper
      * @param int $delay //延迟解密时间，就是解密时间加上延迟时间等于超时时间
      * @return mixed
      * @throws \Exception
-     * @author LinZhou <1207032539@qq.com>
+     * @author 我只想看看蓝天 <1207032539@qq.com>
      */
     public function aesDecrypt($data, string $secret = null, int $delay = 0)
     {
@@ -82,7 +82,7 @@ class EncryptHelper
      * @param mixed $data //明文
      * @param string $secret //秘钥
      * @return string
-     * @author LinZhou <1207032539@qq.com>
+     * @author 我只想看看蓝天 <1207032539@qq.com>
      */
     public function rawAesEncrypt(string $data, string $secret = null): string
     {
@@ -98,7 +98,7 @@ class EncryptHelper
      * @param mixed $data //密文
      * @param string|null $secret //秘钥
      * @return string
-     * @author LinZhou <1207032539@qq.com>
+     * @author 我只想看看蓝天 <1207032539@qq.com>
      */
     public function rawAesDecrypt(string $data, string $secret = null): string
     {

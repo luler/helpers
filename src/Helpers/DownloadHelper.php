@@ -1,7 +1,7 @@
 <?php
 /**
  * Created by PhpStorm.
- * User: LinZhou <1207032539@qq.com>
+ * User: 我只想看看蓝天 <1207032539@qq.com>
  * Date: 2018/11/2
  * Time: 11:00
  */
@@ -14,7 +14,7 @@ class DownloadHelper
      * 文件下载(可断点下载)
      * @param $filename
      * @param $path
-     * @author LinZhou <1207032539@qq.com>
+     * @author 我只想看看蓝天 <1207032539@qq.com>
      */
     public static function downloadFileByPath($filename, $path)
     {

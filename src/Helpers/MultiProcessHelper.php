@@ -97,7 +97,7 @@ class MultiProcessHelper
     /**
      * 回收进程
      * @param int $hang_up
-     * @author LinZhou <1207032539@qq.com>
+     * @author 我只想看看蓝天 <1207032539@qq.com>
      */
     public static function recycleProcess(int $hang_up = 1)
     {

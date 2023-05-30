@@ -8,7 +8,7 @@ class CommonHelper
      * 获取常用随机中文
      * @param $num $num为生成汉字的数量
      * @return string
-     * @author LinZhou <1207032539@qq.com>
+     * @author 我只想看看蓝天 <1207032539@qq.com>
      */
     public static function getRandomChineseWords($num = 16)
     {
@@ -26,7 +26,7 @@ class CommonHelper
     /**
      * 去掉数组里每个元素两边的空格(导入execl经常用到)
      * @param $param  一位数组
-     * @author LinZhou <1207032539@qq.com>
+     * @author 我只想看看蓝天 <1207032539@qq.com>
      */
     public static function trimBlank(&$param)
     {
@@ -45,7 +45,7 @@ class CommonHelper
      * @param $length
      * @param $tail
      * @return string
-     * @author LinZhou <1207032539@qq.com>
+     * @author 我只想看看蓝天 <1207032539@qq.com>
      */
     public static function strLengthLimit($str, $length, $tail = '...')
     {
@@ -62,7 +62,7 @@ class CommonHelper
      * @param string $pid //父节点字段
      * @param string $child //子节点字段
      * @return array
-     * @author LinZhou <1207032539@qq.com>
+     * @author 我只想看看蓝天 <1207032539@qq.com>
      */
     public static function arrayToTree($arr, $pk = 'id', $pid = 'pid', $child = 'children')
     {
@@ -104,7 +104,7 @@ class CommonHelper
     /**
      * url跳转
      * @param $url
-     * @author LinZhou <1207032539@qq.com>
+     * @author 我只想看看蓝天 <1207032539@qq.com>
      */
     public static function goToUrl($url)
     {
@@ -115,7 +115,7 @@ class CommonHelper
     /**
      * 生成手机验证码
      * @param int $length
-     * @author LinZhou <1207032539@qq.com>
+     * @author 我只想看看蓝天 <1207032539@qq.com>
      */
     public static function buildPhoneCode($length = 4)
     {
@@ -130,7 +130,7 @@ class CommonHelper
      * 删除目录函数
      * @param $dirname
      * @return bool
-     * @author LinZhou <1207032539@qq.com>
+     * @author 我只想看看蓝天 <1207032539@qq.com>
      */
     public static function deleteDir($dirname)
     {
@@ -189,7 +189,7 @@ class CommonHelper
      * 中文乱码兼容
      * @param $str
      * @return false|mixed|string
-     * @author LinZhou <1207032539@qq.com>
+     * @author 我只想看看蓝天 <1207032539@qq.com>
      */
     public static function correctEncoding($str)
     {
@@ -232,7 +232,7 @@ class CommonHelper
      * 随机生成唯一订单号（基于日期和随机乱序）
      * @param null $type
      * @return string
-     * @author LinZhou <1207032539@qq.com>
+     * @author 我只想看看蓝天 <1207032539@qq.com>
      */
     public static function generateOrderId($type = 1)
     {
@@ -251,7 +251,7 @@ class CommonHelper
      * @param string $domain_or_ip //域名或ip
      * @param int $port //端口
      * @return bool
-     * @author LinZhou <1207032539@qq.com>
+     * @author 我只想看看蓝天 <1207032539@qq.com>
      */
     public static function pingIpv4(string $domain_or_ip, int $port = 80)
     {
@@ -289,5 +289,39 @@ class CommonHelper
                 exit();
             }
         }
+    }
+
+    /**
+     * 构建批量更新sql
+     * @param string $table
+     * @param array $data
+     * @param string $primary_key
+     * @return false|string
+     * @author 我只想看看蓝天 <1207032539@qq.com>
+     */
+    public static function buildBatchUpdateSql(string $table, array $data = [], string $primary_key = 'id')
+    {
+        $keys = array_keys($data[0] ?? []);
+        if (!in_array($primary_key, $keys)) {
+            return false;
+        }
+        array_walk_recursive($data, function (&$value) {
+            $value = is_string($value) ? "'{$value}'" : $value;
+        });
+        $sql = "UPDATE `{$table}` SET ";
+        foreach ($keys as $key) {
+            if ($key == $primary_key) {
+                continue;
+            }
+            $sql .= "`{$key}` = CASE `{$primary_key}`";
+            foreach ($data as $val) {
+                $sql .= " WHEN {$val[$primary_key]} THEN {$val[$key]}";
+            }
+            $sql .= ' END,';
+        }
+        $sql = trim($sql, ',');
+        $primary_key_ids = array_column($data, $primary_key);
+        $sql .= " WHERE `{$primary_key}` IN (" . join(',', $primary_key_ids) . ')';
+        return $sql;
     }
 }
