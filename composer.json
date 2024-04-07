@@ -21,7 +21,8 @@
     "ext-zip": "*",
     "ext-openssl": "*",
     "ext-posix": "*",
-    "ext-pcntl": "*"
+    "ext-pcntl": "*",
+    "ext-gd": "*"
   },
   "autoload": {
     "psr-4": {
