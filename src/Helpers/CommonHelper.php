@@ -324,4 +324,49 @@ class CommonHelper
         $sql .= " WHERE `{$primary_key}` IN (" . join(',', $primary_key_ids) . ')';
         return $sql;
     }
+
+    /**
+     * 重置图片（可实现低损压缩）
+     * @param string $source_filename //原图片文件路径
+     * @param string $destination_filename //目标图片文件路径
+     * @param $scale_rate_size //缩放比例，1-原比例,或者传入宽高数组:[400,300]
+     * @param $quality //图片质量，0-100，值越大质量越好
+     * @return void
+     */
+    public static function resetImage(string $source_filename, string $destination_filename = '', $scale_rate_size = 1, int $quality = 75)
+    {
+        $ext = strtolower(strrchr($source_filename, '.'));
+        if (!in_array($ext, ['.jpg', '.jpeg', '.png'])) {
+            throw new \Exception('图片扩展名不支持');
+        }
+        $destination_filename = empty($destination_filename) ? $source_filename : $destination_filename;
+        //获取原图尺寸
+        list($width, $height) = getimagesize($source_filename);
+        //缩放尺寸
+        if (is_array($scale_rate_size)) {
+            list($new_width, $new_height) = $scale_rate_size;
+        } else {
+            $new_width = $width * $scale_rate_size;
+            $new_height = $height * $scale_rate_size;
+        }
+        $src_image = imagecreatefromstring(file_get_contents($source_filename));
+        $dst_image = imagecreatetruecolor($new_width, $new_height);
+        // 保持PNG图片的透明度
+        if ($ext === '.png') {
+            imagesavealpha($dst_image, true);
+            $trans_color = imagecolorallocatealpha($dst_image, 0, 0, 0, 127);
+            imagefill($dst_image, 0, 0, $trans_color);
+            imagealphablending($dst_image, false);
+        }
+        imagecopyresampled($dst_image, $src_image, 0, 0, 0, 0, $new_width, $new_height, $width, $height);
+        if ($ext === '.png') {
+            imagepng($dst_image, $destination_filename, range(9, 0)[floor(($quality > 90 ? 90 : $quality) / 10)] ?? 0);
+        } else {
+            //输出压缩后的图片
+            imagejpeg($dst_image, $destination_filename, $quality);
+        }
+        // 销毁图像资源
+        imagedestroy($dst_image);
+        imagedestroy($src_image);
+    }
 }
