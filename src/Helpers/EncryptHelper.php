@@ -6,7 +6,7 @@ class EncryptHelper
 {
     private $iv = '0000000000000000';
     private $method = 'aes-128-cbc';
-    private $option = 0;
+    private $options = 0;
     private $secret = 'iloveyouverymuchandyou?';
 
     private static $instance;
@@ -17,6 +17,25 @@ class EncryptHelper
             self::$instance = new static();
         }
         return self::$instance;
+    }
+
+    /**
+     * 修改openssl加解密配置
+     * @param $method
+     * @param $options
+     * @param $iv
+     * @param $secret
+     * @return $this
+     * @author 我只想看看蓝天 <1207032539@qq.com>
+     */
+    public function opensslConfig($method = null, $options = null, $iv = null, $secret = null)
+    {
+        !is_null($method) && $this->method = $method;
+        !is_null($options) && $this->options = $options;
+        !is_null($iv) && $this->iv = $iv;
+        !is_null($secret) && $this->secret = $secret;
+
+        return $this;
     }
 
     /**
@@ -43,7 +62,7 @@ class EncryptHelper
             $secret = $this->secret;
         }
         $clear = serialize($clear);
-        $ciper = openssl_encrypt($clear, $this->method, $secret, $this->option, $this->iv);
+        $ciper = openssl_encrypt($clear, $this->method, $secret, $this->options, $this->iv);
 
         return base64_encode($ciper);
     }
@@ -63,7 +82,7 @@ class EncryptHelper
             $secret = $this->secret;
         }
         $data = base64_decode($data);
-        $clear = openssl_decrypt($data, $this->method, $secret, $this->option, $this->iv);
+        $clear = openssl_decrypt($data, $this->method, $secret, $this->options, $this->iv);
         $clear = unserialize($clear);
         if (!isset($clear['is_expires'])) {
             throw new \Exception('解密失败', 1001);
@@ -89,7 +108,7 @@ class EncryptHelper
         if (is_null($secret)) {
             $secret = $this->secret;
         }
-        $ciper = openssl_encrypt($data, $this->method, $secret, $this->option, $this->iv);
+        $ciper = openssl_encrypt($data, $this->method, $secret, $this->options, $this->iv);
         return $ciper;
     }
 
@@ -105,7 +124,7 @@ class EncryptHelper
         if (is_null($secret)) {
             $secret = $this->secret;
         }
-        $clear = openssl_decrypt($data, $this->method, $secret, $this->option, $this->iv);
+        $clear = openssl_decrypt($data, $this->method, $secret, $this->options, $this->iv);
 
         return $clear;
     }

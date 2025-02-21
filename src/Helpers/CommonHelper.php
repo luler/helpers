@@ -5,57 +5,6 @@ namespace Luler\Helpers;
 class CommonHelper
 {
     /**
-     * 获取常用随机中文
-     * @param $num $num为生成汉字的数量
-     * @return string
-     * @author 我只想看看蓝天 <1207032539@qq.com>
-     */
-    public static function getRandomChineseWords($num = 16)
-    {
-        $b = '';
-        for ($i = 0; $i < $num; $i++) {
-            // 使用chr()函数拼接双字节汉字，前一个chr()为高位字节，后一个为低位字节
-            //一级汉字
-            $a = chr(mt_rand(0xB0, 0xD7)) . chr(mt_rand(0xA1, 0xF0));
-            // 转码
-            $b .= iconv('GB2312', 'UTF-8', $a);
-        }
-        return $b;
-    }
-
-    /**
-     * 去掉数组里每个元素两边的空格(导入execl经常用到)
-     * @param $param  一位数组
-     * @author 我只想看看蓝天 <1207032539@qq.com>
-     */
-    public static function trimBlank(&$param)
-    {
-        foreach ($param as &$value) {
-            if (is_array($value)) {
-                self::trimBlank($value);
-            } elseif (!is_object($value)) {
-                $value = trim($value);
-            }
-        }
-    }
-
-    /**
-     * 限制字符串长度，并以省略符结尾
-     * @param $str
-     * @param $length
-     * @param $tail
-     * @return string
-     * @author 我只想看看蓝天 <1207032539@qq.com>
-     */
-    public static function strLengthLimit($str, $length, $tail = '...')
-    {
-        if (mb_strlen($str) > $length) {
-            $str = mb_substr($str, 0, $length - mb_strlen($tail)) . $tail;
-        }
-        return $str;
-    }
-
-    /**
      * 数组转换成树结构
      * @param $arr //数组
      * @param string $pk //主键
@@ -64,7 +13,7 @@ class CommonHelper
      * @return array
      * @author 我只想看看蓝天 <1207032539@qq.com>
      */
-    public static function arrayToTree($arr, $pk = 'id', $pid = 'pid', $child = 'children')
+    public static function arrayToTree($arr, $pk = 'id', $pid = 'pid', $child = 'children'): array
     {
         $temp = [];
         foreach ($arr as $value) {
@@ -88,11 +37,11 @@ class CommonHelper
 
     /**
      * 字节转为合适的单位
-     * @param int $size
+     * @param int $size //字节数
      * @return string
      * @author 我只想看看蓝天 <1207032539@qq.com>
      */
-    public static function convertSize(int $size)
+    public static function convertSize(int $size): string
     {
         $unit = array('B', 'KB', 'MB', 'GB', 'TB', 'PB');
         if ($size == 0) {
@@ -102,53 +51,52 @@ class CommonHelper
     }
 
     /**
-     * url跳转
-     * @param $url
-     * @author 我只想看看蓝天 <1207032539@qq.com>
-     */
-    public static function goToUrl($url)
-    {
-        header('location: ' . $url);
-        exit();
-    }
-
-    /**
      * 生成手机验证码
-     * @param int $length
+     * @param int $size //生成数字位数，默认4位
      * @author 我只想看看蓝天 <1207032539@qq.com>
      */
-    public static function buildPhoneCode($length = 4)
+    public static function createRandomNumber(int $size = 4): string
     {
-        $range = range(0, 100);
-        shuffle($range);
-        $range = join($range);
-        $range = substr($range, 0, $length);
-        return $range;
+        $code = '';
+        $numbers = '0123456789'; // 基础数字池
+        for ($i = 0; $i < $size; $i++) {
+            $code .= $numbers[random_int(0, 9)]; // 密码学安全随机
+        }
+        return $code;
     }
 
     /**
      * 删除目录函数
-     * @param $dirname
+     * @param string $dirname
      * @return bool
      * @author 我只想看看蓝天 <1207032539@qq.com>
      */
-    public static function deleteDir($dirname)
+    public static function deleteDir(string $dirname): bool
     {
-        if (file_exists($dirname)) {
-            $handle = opendir($dirname);
-            while (($file = readdir($handle)) !== false) {
-                if ($file != '.' && $file != '..') {
-                    if (is_dir($dirname . "/$file")) {
-                        self::deleteDir($dirname . "/$file");
-                    } else {
-                        unlink($dirname . "/$file");
-                    }
-                }
+        if (!file_exists($dirname) || !is_dir($dirname)) {
+            return false;
+        }
+
+        try {
+            //创建目录递归遍历，自动跳过 '.' 和 '..'
+            $iterator = new \RecursiveDirectoryIterator(
+                $dirname,
+                \RecursiveDirectoryIterator::SKIP_DOTS
+            );
+            //一次性递归处理所有子目录和文件,
+            $files = new \RecursiveIteratorIterator(
+                $iterator,
+                \RecursiveIteratorIterator::CHILD_FIRST
+            );
+
+            foreach ($files as $file) {
+                $path = $file->getRealPath();
+                $file->isDir() ? rmdir($path) : unlink($path);
             }
-            closedir($handle);
+
             rmdir($dirname);
             return true;
-        } else {
+        } catch (\Exception $e) {
             return false;
         }
     }
@@ -159,7 +107,7 @@ class CommonHelper
      * @param string $to_dir 解压后的文件夹路径
      * @return bool
      */
-    public static function extractZipToFile($zip_file, $to_dir)
+    public static function extractZipToFile(string $zip_file, string $to_dir): bool
     {
         $zip = new \ZipArchive;
         if ($zip->open($zip_file) === TRUE) {
@@ -205,44 +153,56 @@ class CommonHelper
 
     /**
      * 复制目录
-     * @param $source
-     * @param $dest
+     * @param string $source
+     * @param string $dest
+     * @return bool
+     * @author 我只想看看蓝天 <1207032539@qq.com>
      */
-    public static function copyDir($source, $dest)
+    public static function copyDir(string $source, string $dest): bool
     {
-        if (!file_exists($dest)) mkdir($dest);
-        $handle = opendir($source);
-        while (($item = readdir($handle)) !== false) {
-            if ($item == '.' || $item == '..') {
-                continue;
-            }
-            $_source = $source . '/' . $item;
-            $_dest = $dest . '/' . $item;
-            if (is_file($_source)) {
-                copy($_source, $_dest);
-            }
-            if (is_dir($_source)) {
-                self::copyDir($_source, $_dest);
-            }
+        if (!is_dir($source)) {
+            return false;
         }
-        closedir($handle);
+
+        try {
+            // 创建目标目录及其父目录
+            if (!is_dir($dest)) {
+                mkdir($dest, 0777, true);
+            }
+
+            $iterator = new \RecursiveIteratorIterator(
+                new \RecursiveDirectoryIterator($source, \RecursiveDirectoryIterator::SKIP_DOTS), //过滤掉.和..目录
+                \RecursiveIteratorIterator::SELF_FIRST
+            );
+
+            foreach ($iterator as $item) {
+                $target = $dest . DIRECTORY_SEPARATOR . $iterator->getSubPathName();
+                $item->isDir() ? mkdir($target) : copy($item->getPathname(), $target);
+            }
+
+            return true;
+        } catch (\Exception $e) {
+            return false;
+        }
     }
 
     /**
      * 随机生成唯一订单号（基于日期和随机乱序）
-     * @param null $type
+     * @param int $prefix_time_type
      * @return string
      * @author 我只想看看蓝天 <1207032539@qq.com>
      */
-    public static function generateOrderId($type = 1)
+    public static function generateOrderId(int $prefix_time_type = 1, int $ramdom_number_size = 3): string
     {
-        if ($type == 1) {
+        if ($prefix_time_type == 1) {
             //都是数字，不过存库时要使用varchar类型,唯一性更好
-            $id = date_format(new \DateTime(), 'YmdHisu') . str_pad(mt_rand(), 10, '0', STR_PAD_LEFT);
+            $id = date_format(new \DateTime(), 'YmdHisu');
         } else {
             //bigint类型
-            $id = time() . date_format(new \DateTime(), 'u') . mt_rand(100, 999);
+            $id = time() . date_format(new \DateTime(), 'u');
         }
+        $id .= self::createRandomNumber($ramdom_number_size);
+
         return $id;
     }
 
@@ -253,21 +213,27 @@ class CommonHelper
      * @return bool
      * @author 我只想看看蓝天 <1207032539@qq.com>
      */
-    public static function pingIpv4(string $domain_or_ip, int $port = 80)
+    public static function pingIpv4(string $domain_or_ip, int $port = 80): bool
     {
-        $socket = socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
-        //设置超时，不然，链接不上会阻塞几十秒，这里设置1秒连不上就返回false
-        socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, ["sec" => 1, "usec" => 0]);
-        socket_set_option($socket, SOL_SOCKET, SO_SNDTIMEO, ["sec" => 1, "usec" => 0]);
-
-        try {
-            $ok = socket_connect($socket, $domain_or_ip, $port);
-        } catch (\Exception $e) {
-//        $error_msg=socket_strerror(socket_last_error($socket)); //错误信息
-            $ok = false;
+        // 输入验证
+        if (empty($domain_or_ip) || $port < 1 || $port > 65535) {
+            return false;
         }
+        // 创建 socket
+        $socket = @socket_create(AF_INET, SOCK_STREAM, SOL_TCP);
+        if ($socket === false) {
+            return false;
+        }
+        // 设置超时
+        $timeout = ['sec' => 1, 'usec' => 0];
+        socket_set_option($socket, SOL_SOCKET, SO_RCVTIMEO, $timeout);
+        socket_set_option($socket, SOL_SOCKET, SO_SNDTIMEO, $timeout);
+        // 连接尝试
+        $result = @socket_connect($socket, $domain_or_ip, $port);
+        // 清理资源
         socket_close($socket);
-        return $ok;
+
+        return $result;
     }
 
     /**
