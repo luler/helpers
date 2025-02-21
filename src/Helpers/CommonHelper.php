@@ -335,4 +335,50 @@ class CommonHelper
         imagedestroy($dst_image);
         imagedestroy($src_image);
     }
+
+    /**
+     * 加载（网络）资源为临时文件并回调处理（程序运行结束会自动删除）
+     * @param $file_url //网络资源仅支持get请求，不支持设置请求头
+     * @param $function //回调函数，接受临时文件地址$function($temp_file_path),可以返回处理后的数据
+     * @return mixed
+     * @author 我只想看看蓝天 <1207032539@qq.com>
+     */
+    public static function downloadTempFile(string $file_url, callable $function)
+    {
+        $temp_file = tmpfile();
+        $content = file_get_contents($file_url);
+        fwrite($temp_file, $content);
+        $meta_data = stream_get_meta_data($temp_file);
+        return $function($meta_data['uri']);
+    }
+
+    /**
+     * 重试助手函数
+     * @param callable $callback 要执行的回调函数
+     * @param int $try_time 最大重试次数，默认值为3
+     * @param int $delay 重试间隔时间（微秒，1秒等于1000000微秒），默认值为1000微秒=1毫秒，避免cpu占用太高
+     * @param callable|null $onRetry 重试时调用的回调函数（可选）
+     * @return mixed 回调函数的返回值
+     * @throws \Exception 如果达到最大重试次数仍失败
+     */
+    public static function retry(callable $callback, int $try_time = 3, int $delay_microseconds = 1000, callable $onRetry = null)
+    {
+        $attempt = 0;
+        while (true) {
+            try {
+                return $callback();
+            } catch (\Exception $e) {
+                $attempt++;
+                $is_max_retry = $attempt >= $try_time;
+                if (!is_null($onRetry)) {
+                    $onRetry($is_max_retry, $attempt, $e);
+                }
+                if ($is_max_retry) {
+                    throw $e;
+                }
+
+                $delay_microseconds && usleep($delay_microseconds);
+            }
+        }
+    }
 }
